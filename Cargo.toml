@@ -1,0 +1,15 @@
+[package]
+name = "downwell_clone"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bevy = {version = "0.14", features = ["file_watcher"]}
+avian2d = "0.1"
+leafwing-input-manager = "0.15.0"
+bevy_editor_pls = "0.9"
+rand = "*"
+strum = "*"
+strum_macros = "*"
+serde = "*"
+ron = "*"

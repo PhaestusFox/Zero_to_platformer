@@ -1,0 +1,9 @@
+{
+    "cSpell.words": [
+        "leafwing",
+        "Seedable"
+    ],
+    "files.associations": {
+        "*.tile": "ron"
+    }
+}

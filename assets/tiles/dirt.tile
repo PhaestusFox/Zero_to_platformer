@@ -1,0 +1,17 @@
+(
+    name: "Dirt",
+    priority: -127,
+    tile: Dirt,
+    is_sold: true,
+    team: Any,
+    can_be_solid: (true, true, true, true, true, true, true, true),
+    must_be_solid: (false, false, false, false, false, false, false, false),
+    variants: [
+        DirtEmpty,
+        DirtBones,
+        DirtSpots,
+        DirtBone,
+        DirtCross,
+        DirtSkull,
+    ],
+)

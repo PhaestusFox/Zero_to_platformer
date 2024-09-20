@@ -1,0 +1,12 @@
+(
+    name: "Grass Yellow Up",
+    priority: 2,
+    tile: Dirt,
+    is_sold: true,
+    team: Yellow,
+    can_be_solid: (true, true, true, true, true, true, true, false),
+    must_be_solid: (false, true, false, false, false, true, false, false),
+    variants: [
+        DirtLeftYellow,
+    ],
+)
