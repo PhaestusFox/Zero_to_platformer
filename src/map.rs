@@ -1,7 +1,5 @@
-use avian2d::parry::bounding_volume;
 use bevy::{
     asset::{AssetLoader, AsyncReadExt, LoadedFolder},
-    ecs::world,
     prelude::*,
     utils::HashMap,
 };
@@ -9,18 +7,25 @@ use rand::{seq::IteratorRandom, SeedableRng};
 use strum::IntoEnumIterator;
 
 pub fn plugin(app: &mut App) {
-    app.init_resource::<Tiles>()
-        .init_asset::<TileDescriptior>()
+    app
+        .init_resource::<Tiles>()
+        .init_asset::<TileDescriptor>()
         .register_type::<TileSprite>()
         .register_asset_loader(MapLoader)
-        .register_asset_loader(TileDescriptiorLoader)
+        .register_asset_loader(TileDescriptorLoader)
         .init_state::<MapState>()
         .init_asset::<MapData>()
         .register_type::<MapData>()
         .init_resource::<CurrentMap>()
         .init_resource::<LoadMap>()
         .init_resource::<SpriteSheet>()
-        .add_systems(Update, (update_tile, set_tile).chain())
+        .add_systems(
+          Update,
+          (
+            update_tile,
+            set_tile
+          ).chain()
+        )
         .add_systems(
             Update,
             (
@@ -29,11 +34,18 @@ pub fn plugin(app: &mut App) {
                 detect_changes.run_if(in_state(MapState::Done)),
             ),
         )
-        .add_systems(OnEnter(MapState::Spawning), spawn_map)
-        .add_systems(Last, set_done.run_if(in_state(MapState::Spawning)));
+        .add_systems(
+          OnEnter(MapState::Spawning),
+          spawn_map
+        )
+        .add_systems(
+          Last,
+          set_done.run_if(in_state(MapState::Spawning))
+        );
 }
 
 #[derive(Resource)]
+#[allow(dead_code)] // TODO: reason as to why, I wasn't paying full attention at this point to say exactly why - Skylark
 struct Tiles(Handle<LoadedFolder>);
 impl FromWorld for Tiles {
     fn from_world(world: &mut World) -> Self {
@@ -66,7 +78,7 @@ impl SpriteSheet {
 impl FromWorld for SpriteSheet {
     fn from_world(world: &mut World) -> Self {
         let image = world.resource::<AssetServer>().load("tilemap.png");
-        let atlas = TextureAtlasLayout::from_grid(UVec2::new(8, 8), 15, 10, None, None);
+        let atlas = TextureAtlasLayout::from_grid(UVec2::splat(8), 15, 10, None, None);
         let atlas = world
             .resource_mut::<Assets<TextureAtlasLayout>>()
             .add(atlas);
@@ -359,14 +371,14 @@ fn spawn_map(
         error!("Map Not Loaded");
         return;
     };
-    let mut map_entites = MapEntites::new();
+    let mut map_entities = MapEntities::new();
     commands
         .spawn(SpatialBundle::default())
         .with_children(|map| {
             for block in map_data.blocks.iter() {
                 let id = block.translation;
-                if map_entites.empty(id) {
-                    map_entites.add(
+                if map_entities.empty(id) {
+                    map_entities.add(
                         id,
                         map.spawn((
                             SpriteBundle {
@@ -376,9 +388,9 @@ fn spawn_map(
                                 texture: sprite_sheet.image(),
                                 sprite: Sprite {
                                     custom_size: Some(Vec2::splat(32.)),
-                                    ..Default::default()
+                                    ..default()
                                 },
-                                ..Default::default()
+                                ..default()
                             },
                             TextureAtlas {
                                 layout: sprite_sheet.atlas(),
@@ -395,15 +407,15 @@ fn spawn_map(
                 }
             }
         })
-        .insert(map_entites);
+        .insert(map_entities);
 }
 
 #[derive(Component)]
-struct MapEntites(HashMap<IVec3, Entity>);
+struct MapEntities(HashMap<IVec3, Entity>);
 
-impl MapEntites {
-    fn new() -> MapEntites {
-        MapEntites(HashMap::default())
+impl MapEntities {
+    fn new() -> MapEntities {
+        MapEntities(HashMap::default())
     }
 
     fn add(&mut self, pos: IVec3, entity: Entity) -> bool {
@@ -596,26 +608,26 @@ fn update_tile(
         Or<(Changed<Tile>, Changed<Team>, Changed<Variant>)>,
     >,
     tiles: Query<(&Tile, &Team, &Variant)>,
-    map: Query<&MapEntites>,
-    tile_descriptiors: Res<Assets<TileDescriptior>>,
+    map: Query<&MapEntities>,
+    tile_descriptors: Res<Assets<TileDescriptor>>,
 ) {
     let Ok(map) = map.get_single() else {
         return;
     };
-    let tile_descriptiors = tile_descriptiors
+    let tile_descriptors = tile_descriptors
         .iter()
         .map(|d| d.1)
         .cloned()
         .collect::<Vec<_>>();
     for (mut sprite, id, tile, team, variant) in &mut sprites {
-        let mut tile_builder = TileSpriteBuilder::new(tile_descriptiors.clone());
+        let mut tile_builder = TileSpriteBuilder::new(tile_descriptors.clone());
         tile_builder.set_team(*team);
         tile_builder.set_variant(*variant);
         tile_builder.set_tile(*tile);
-        for adjacencie in Adjacencies::iter() {
-            if let Some(id) = map.get(id.0 + adjacencie) {
+        for adjacent in Adjacencies::iter() {
+            if let Some(id) = map.get(id.0 + adjacent) {
                 if let Ok(to) = tiles.get(id) {
-                    tile_builder.set_adjacent(adjacencie, to.0.is_solid());
+                    tile_builder.set_adjacent(adjacent, to.0.is_solid());
                 }
             }
         }
@@ -633,7 +645,7 @@ fn update_tile(
 
 struct TileSpriteBuilder {
     seed: u64,
-    tiles: Vec<TileDescriptior>,
+    tiles: Vec<TileDescriptor>,
     tile: Option<Tile>,
     team: Option<Team>,
     variant: Variant,
@@ -641,7 +653,7 @@ struct TileSpriteBuilder {
 }
 
 impl TileSpriteBuilder {
-    fn new(tiles: Vec<TileDescriptior>) -> TileSpriteBuilder {
+    fn new(tiles: Vec<TileDescriptor>) -> TileSpriteBuilder {
         TileSpriteBuilder {
             seed: 0,
             tiles,
@@ -703,7 +715,7 @@ impl TileSpriteBuilder {
 }
 
 #[derive(serde::Deserialize, serde::Serialize, Asset, Reflect, Clone, Debug)]
-struct TileDescriptior {
+struct TileDescriptor {
     name: String,
     priority: i8,
     tile: Tile,
@@ -716,7 +728,7 @@ struct TileDescriptior {
 
 #[test]
 fn ron_out() {
-    let all = TileDescriptior::all();
+    let all = TileDescriptor::all();
     for tile in all {
         println!(
             "{}",
@@ -725,10 +737,10 @@ fn ron_out() {
     }
 }
 
-impl TileDescriptior {
-    fn all() -> Vec<TileDescriptior> {
+impl TileDescriptor {
+    fn all() -> Vec<TileDescriptor> {
         vec![
-            TileDescriptior {
+            TileDescriptor {
                 name: "Grass Yellow Up".to_string(),
                 priority: 1,
                 team: Team::Yellow,
@@ -742,7 +754,7 @@ impl TileDescriptior {
                     TileSprite::DirtBones,
                 ],
             },
-            TileDescriptior {
+            TileDescriptor {
                 name: "Dirt".to_string(),
                 priority: -1,
                 tile: Tile::Dirt,
@@ -793,7 +805,7 @@ impl AssetLoader for MapLoader {
     fn load<'a>(
         &'a self,
         reader: &'a mut bevy::asset::io::Reader,
-        settings: &'a Self::Settings,
+        _settings: &'a Self::Settings,
         load_context: &'a mut bevy::asset::LoadContext,
     ) -> impl bevy::utils::ConditionalSendFuture<Output = Result<Self::Asset, Self::Error>> {
         load_map(reader, load_context)
@@ -802,11 +814,11 @@ impl AssetLoader for MapLoader {
 
 async fn load_map<'a>(
     reader: &'a mut bevy::asset::io::Reader<'_>,
-    load_context: &'a mut bevy::asset::LoadContext<'_>,
+    _load_context: &'a mut bevy::asset::LoadContext<'_>,
 ) -> Result<MapData, &'static str> {
     let mut data = String::new();
     if reader.read_to_string(&mut data).await.is_err() {
-        return Err("Failed to read to strting");
+        return Err("Failed to read to string");
     };
 
     let mut blocks = vec![];
@@ -818,7 +830,7 @@ async fn load_map<'a>(
         let mut words = line.split_whitespace();
         match words
             .next()
-            .expect("atleast one word")
+            .expect("at least one word")
             .to_lowercase()
             .as_str()
         {
@@ -836,7 +848,7 @@ fn detect_changes(
     mut commands: Commands,
     mut events: EventReader<AssetEvent<MapData>>,
     mut next: ResMut<NextState<MapState>>,
-    maps: Query<Entity, With<MapEntites>>,
+    maps: Query<Entity, With<MapEntities>>,
     current: Res<CurrentMap>,
 ) {
     for event in events.read() {
@@ -851,10 +863,10 @@ fn detect_changes(
     }
 }
 
-struct TileDescriptiorLoader;
+struct TileDescriptorLoader;
 
-impl AssetLoader for TileDescriptiorLoader {
-    type Asset = TileDescriptior;
+impl AssetLoader for TileDescriptorLoader {
+    type Asset = TileDescriptor;
     type Settings = ();
     type Error = &'static str;
     fn load<'a>(
@@ -863,16 +875,16 @@ impl AssetLoader for TileDescriptiorLoader {
         _settings: &'a Self::Settings,
         _load_context: &'a mut bevy::asset::LoadContext,
     ) -> impl bevy::utils::ConditionalSendFuture<Output = Result<Self::Asset, Self::Error>> {
-        load_tile_descriptior(reader)
+        load_tile_descriptor(reader)
     }
     fn extensions(&self) -> &[&str] {
         &["tile"]
     }
 }
 
-async fn load_tile_descriptior<'a>(
+async fn load_tile_descriptor<'a>(
     reader: &'a mut bevy::asset::io::Reader<'_>,
-) -> Result<TileDescriptior, &'static str> {
+) -> Result<TileDescriptor, &'static str> {
     let mut data = String::new();
     if reader.read_to_string(&mut data).await.is_err() {
         return Err("Failed to read to string");

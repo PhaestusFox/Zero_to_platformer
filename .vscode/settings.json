@@ -1,9 +1,14 @@
 {
     "cSpell.words": [
         "leafwing",
-        "Seedable"
+        "Seedable",
+        "Actionlike",
+        "Wown",
+        "tilemap",
+        "rngs",
     ],
     "files.associations": {
         "*.tile": "ron"
-    }
+    },
+    "editor.indentSize": 4,
 }
