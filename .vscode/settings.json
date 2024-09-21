@@ -6,6 +6,7 @@
         "Wown",
         "tilemap",
         "rngs",
+        "egui",
     ],
     "files.associations": {
         "*.tile": "ron"

@@ -401,7 +401,7 @@ fn spawn_map(
 struct MapEntities(HashMap<IVec3, Entity>);
 
 impl MapEntities {
-    fn new() -> MapEntities {
+    fn new() -> Self {
         MapEntities(HashMap::default())
     }
 
@@ -654,7 +654,7 @@ struct TileSpriteBuilder {
 }
 
 impl TileSpriteBuilder {
-    fn new(tiles: Vec<TileDescriptor>) -> TileSpriteBuilder {
+    fn new(tiles: Vec<TileDescriptor>) -> Self {
         TileSpriteBuilder {
             seed: 0,
             tiles,
@@ -727,7 +727,7 @@ pub struct TileDescriptor {
 }
 
 impl TileDescriptor {
-    pub fn new() -> TileDescriptor {
+    pub fn new() -> Self {
         TileDescriptor {
             priority: 0,
             tile: Tile::Air,

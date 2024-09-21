@@ -1,14 +1,14 @@
 use std::{borrow::Cow, fs};
 
 use bevy_editor_pls::egui::Slider;
-use bevy_inspector_egui::{bevy_inspector, reflect_inspector};
+use bevy_inspector_egui::reflect_inspector;
 
-use bevy::{asset::io::AssetSource, prelude::*};
+use bevy::prelude::*;
 use bevy_editor_pls::{
-    editor_window::EditorWindow, egui::epaint::tessellator::path, AddEditorWindow,
+    editor_window::EditorWindow, AddEditorWindow,
 };
 
-use crate::map::{Team, Tile, TileDescriptor};
+use crate::map::TileDescriptor;
 
 pub fn setup(app: &mut App) {
     app.add_editor_window::<TileEditorWindow>();
@@ -104,7 +104,7 @@ impl EditorWindow for TileEditorWindow {
                 ui.text_edit_singleline(&mut rep.rep_word);
             });
             if ui.button("Go").clicked() {
-                let Ok(mut dir) = fs::read_dir("assets/tiles") else {
+                let Ok(dir) = fs::read_dir("assets/tiles") else {
                     state.error("Failed to read Dir", ClearOn::ReadDir);
                     return;
                 };
@@ -127,7 +127,7 @@ impl EditorWindow for TileEditorWindow {
                         continue;
                     };
                     let data = data.replace(&rep.find_word, &rep.rep_word);
-                    fs::write(path, &data);
+                    let _ = fs::write(path, &data);
                     state.done = true;
                 }
             }
