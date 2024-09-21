@@ -1,0 +1,11 @@
+(
+    priority: 4,
+    tile: Dirt,
+    is_sold: true,
+    team: Yellow,
+    can_be_solid: (true, true, true, false, true, false, true, false),
+    must_be_solid: (false, true, false, false, false, false, false, false),
+    variants: [
+        AllBarTopYellow,
+    ],
+)

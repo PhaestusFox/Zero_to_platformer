@@ -1,5 +1,4 @@
 (
-    name: "Dirt",
     priority: -127,
     tile: Dirt,
     is_sold: true,

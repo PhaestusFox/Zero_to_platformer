@@ -3,9 +3,9 @@
     tile: Dirt,
     is_sold: true,
     team: Yellow,
-    can_be_solid: (true, false, true, true, true, true, true, true),
+    can_be_solid: (true, true, true, true, true, false, true, true),
     must_be_solid: (false, false, false, true, false, false, false, true),
     variants: [
-        DirtTopYellow,
+        DirtLowYellow,
     ],
 )

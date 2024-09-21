@@ -2,10 +2,10 @@
     priority: 3,
     tile: Dirt,
     is_sold: true,
-    team: Yellow,
+    team: Pink,
     can_be_solid: (true, true, true, false, true, true, true, false),
     must_be_solid: (false, true, false, false, false, true, false, false),
     variants: [
-        LeftRightYellow,
+        LeftRightPink,
     ],
 )

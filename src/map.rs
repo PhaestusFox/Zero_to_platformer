@@ -7,8 +7,7 @@ use rand::{seq::IteratorRandom, SeedableRng};
 use strum::IntoEnumIterator;
 
 pub fn plugin(app: &mut App) {
-    app
-        .init_resource::<Tiles>()
+    app.init_resource::<Tiles>()
         .init_asset::<TileDescriptor>()
         .register_type::<TileSprite>()
         .register_asset_loader(MapLoader)
@@ -19,13 +18,7 @@ pub fn plugin(app: &mut App) {
         .init_resource::<CurrentMap>()
         .init_resource::<LoadMap>()
         .init_resource::<SpriteSheet>()
-        .add_systems(
-          Update,
-          (
-            update_tile,
-            set_tile
-          ).chain()
-        )
+        .add_systems(Update, (update_tile, set_tile).chain())
         .add_systems(
             Update,
             (
@@ -34,14 +27,8 @@ pub fn plugin(app: &mut App) {
                 detect_changes.run_if(in_state(MapState::Done)),
             ),
         )
-        .add_systems(
-          OnEnter(MapState::Spawning),
-          spawn_map
-        )
-        .add_systems(
-          Last,
-          set_done.run_if(in_state(MapState::Spawning))
-        );
+        .add_systems(OnEnter(MapState::Spawning), spawn_map)
+        .add_systems(Last, set_done.run_if(in_state(MapState::Spawning)));
 }
 
 #[derive(Resource)]
@@ -101,7 +88,7 @@ struct TileId(IVec3);
     Debug,
     Reflect,
 )]
-enum TileSprite {
+pub enum TileSprite {
     Air,
     TreeTopYellow,
     DirtEmpty,
@@ -444,7 +431,8 @@ struct MapData {
 #[derive(
     Reflect, Component, Clone, Copy, serde::Deserialize, serde::Serialize, PartialEq, Eq, Debug,
 )]
-enum Tile {
+pub enum Tile {
+    Air,
     Dirt,
     Tree,
     Spring,
@@ -455,6 +443,7 @@ enum Tile {
 impl Tile {
     fn is_solid(&self) -> bool {
         match self {
+            Tile::Air => false,
             Tile::Dirt => true,
             Tile::Tree => false,
             Tile::Spring => false,
@@ -520,6 +509,7 @@ impl Tile {
                 }
                 Ok(block)
             }
+            Tile::Air => todo!(),
             Tile::Tree => todo!(),
             Tile::Spring => todo!(),
             Tile::Platform => todo!(),
@@ -529,17 +519,28 @@ impl Tile {
 }
 
 #[derive(
-    Reflect, Component, Clone, Copy, PartialEq, Eq, serde::Deserialize, serde::Serialize, Debug,
+    Reflect,
+    Component,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    serde::Deserialize,
+    serde::Serialize,
+    Debug,
+    Default,
 )]
-enum Team {
+#[reflect(Default)]
+pub enum Team {
     Yellow,
     Pink,
     Any,
+    #[default]
     None,
 }
 
 #[derive(Reflect, Component, Clone, Copy)]
-enum Variant {
+pub enum Variant {
     Default,
     Random,
     Fixed(u8),
@@ -715,15 +716,28 @@ impl TileSpriteBuilder {
 }
 
 #[derive(serde::Deserialize, serde::Serialize, Asset, Reflect, Clone, Debug)]
-struct TileDescriptor {
-    name: String,
-    priority: i8,
-    tile: Tile,
-    is_sold: bool,
-    team: Team,
-    can_be_solid: [bool; 8],
-    must_be_solid: [bool; 8],
-    variants: Vec<TileSprite>,
+pub struct TileDescriptor {
+    pub priority: i8,
+    pub tile: Tile,
+    pub is_sold: bool,
+    pub team: Team,
+    pub can_be_solid: [bool; 8],
+    pub must_be_solid: [bool; 8],
+    pub variants: Vec<TileSprite>,
+}
+
+impl TileDescriptor {
+    pub fn new() -> TileDescriptor {
+        TileDescriptor {
+            priority: 0,
+            tile: Tile::Air,
+            is_sold: false,
+            team: Team::None,
+            can_be_solid: [true; 8],
+            must_be_solid: [false; 8],
+            variants: Vec::new(),
+        }
+    }
 }
 
 #[test]
@@ -741,7 +755,6 @@ impl TileDescriptor {
     fn all() -> Vec<TileDescriptor> {
         vec![
             TileDescriptor {
-                name: "Grass Yellow Up".to_string(),
                 priority: 1,
                 team: Team::Yellow,
                 tile: Tile::Dirt,
@@ -755,7 +768,6 @@ impl TileDescriptor {
                 ],
             },
             TileDescriptor {
-                name: "Dirt".to_string(),
                 priority: -1,
                 tile: Tile::Dirt,
                 team: Team::Any,

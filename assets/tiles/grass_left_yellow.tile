@@ -1,5 +1,4 @@
 (
-    name: "Grass Yellow Up",
     priority: 2,
     tile: Dirt,
     is_sold: true,
