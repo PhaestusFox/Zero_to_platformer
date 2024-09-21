@@ -1,8 +1,8 @@
 use avian2d::prelude::*;
-use bevy::{math::VectorSpace, prelude::*};
+use bevy::prelude::*;
 use leafwing_input_manager::prelude::*;
 
-use crate::MainCamera;
+use crate::camera::MainCamera;
 
 pub fn plugin(app: &mut App) {
     app.add_systems(Startup, spawn_player)
@@ -37,16 +37,16 @@ fn spawn_player(mut commands: Commands) {
         },
         SpriteBundle {
             sprite: Sprite {
-                custom_size: Some(Vec2::new(32., 32.)),
-                ..Default::default()
+                custom_size: Some(Vec2::splat(32.)),
+                ..default()
             },
-            ..Default::default()
+            ..default()
         },
         Collider::rectangle(32., 32.),
         Friction {
             static_coefficient: 0.,
             combine_rule: CoefficientCombine::Min,
-            ..Default::default()
+            ..default()
         },
     ));
 }
@@ -69,26 +69,32 @@ fn default_keybindings() -> InputMap<PlayerAction> {
     ])
 }
 
+const PLAYER_HORIZONTAL_SPEED: f32 = 100.;
+const PLAYER_JUMP_SPEED: f32 = 250.;
+const PLAYER_SPEED_LIMIT: f32 = 250.;
+
 fn player_move(
     mut players: Query<(&ActionState<PlayerAction>, &mut LinearVelocity)>,
     time: Res<Time>,
 ) {
     for (input, mut velocity) in &mut players {
         if input.pressed(&PlayerAction::MoveLeft) {
-            velocity.x = -100.;
+            velocity.x = -PLAYER_HORIZONTAL_SPEED;
         } else if input.pressed(&PlayerAction::MoveRight) {
-            velocity.x = 100.;
+            velocity.x = PLAYER_HORIZONTAL_SPEED;
         } else {
             velocity.x = velocity.x.lerp(0., time.delta_seconds() * 4.);
         };
         if input.just_pressed(&PlayerAction::Jump) {
-            velocity.0.y += 250.;
+            velocity.0.y += PLAYER_JUMP_SPEED;
         }
     }
 }
 
-fn clamp_max_velocity(mut players: Query<&mut LinearVelocity, With<Player>>) {
+fn clamp_max_velocity(
+    mut players: Query<&mut LinearVelocity, With<Player>>
+) {
     for mut player in &mut players {
-        player.0.y = player.0.y.clamp(-250., 250.);
+        player.0.y = player.0.y.clamp(-PLAYER_SPEED_LIMIT, PLAYER_SPEED_LIMIT);
     }
 }

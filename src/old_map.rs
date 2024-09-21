@@ -48,7 +48,7 @@ fn test_atlas(mut commands: Commands, atlas: Res<SpriteSheet>) {
                         y as f32 * 20.,
                         0.,
                     )),
-                    ..Default::default()
+                    ..default()
                 },
                 TextureAtlas {
                     layout: atlas.1.clone(),
@@ -108,9 +108,9 @@ fn spawn_walls(
                     )),
                     sprite: Sprite {
                         custom_size: Some(Vec2::splat(32.)),
-                        ..Default::default()
+                        ..default()
                     },
-                    ..Default::default()
+                    ..default()
                 },
                 TextureAtlas {
                     layout: sprite_sheet.1.clone(),
@@ -124,9 +124,9 @@ fn spawn_walls(
                     transform: Transform::from_translation(Vec3::new(240., layer as f32 * 32., 0.)),
                     sprite: Sprite {
                         custom_size: Some(Vec2::splat(32.)),
-                        ..Default::default()
+                        ..default()
                     },
-                    ..Default::default()
+                    ..default()
                 },
                 TextureAtlas {
                     layout: sprite_sheet.1.clone(),
@@ -196,9 +196,9 @@ impl LayerType {
                         )),
                         sprite: Sprite {
                             custom_size: Some(Vec2::splat(32.)),
-                            ..Default::default()
+                            ..default()
                         },
-                        ..Default::default()
+                        ..default()
                     },
                     TextureAtlas {
                         layout: sprite_sheet.1.clone(),
@@ -216,7 +216,7 @@ impl LayerType {
                     .spawn((
                         SpatialBundle {
                             transform: Transform::from_translation(Vec3::new(0., base_layer, 0.)),
-                            ..Default::default()
+                            ..default()
                         },
                         Collider::rectangle((14 - pos * 2) as f32 * 32., 32.),
                         RigidBody::Static,
@@ -235,9 +235,9 @@ impl LayerType {
                                     )),
                                     sprite: Sprite {
                                         custom_size: Some(Vec2::splat(32.)),
-                                        ..Default::default()
+                                        ..default()
                                     },
-                                    ..Default::default()
+                                    ..default()
                                 },
                                 TextureAtlas {
                                     layout: sprite_sheet.1.clone(),
@@ -253,7 +253,7 @@ impl LayerType {
                     .spawn((
                         SpatialBundle {
                             transform: Transform::from_translation(Vec3::new(0., base_layer, 0.)),
-                            ..Default::default()
+                            ..default()
                         },
                         Name::new(format!("Layer {}", layer)),
                         Wall,
@@ -268,7 +268,7 @@ impl LayerType {
                                         0.,
                                         0.,
                                     )),
-                                    ..Default::default()
+                                    ..default()
                                 },
                                 Collider::rectangle((7 - pos) as f32 * 32., 32.),
                                 RigidBody::Static,
@@ -285,9 +285,9 @@ impl LayerType {
                                             )),
                                             sprite: Sprite {
                                                 custom_size: Some(Vec2::splat(32.)),
-                                                ..Default::default()
+                                                ..default()
                                             },
-                                            ..Default::default()
+                                            ..default()
                                         },
                                         TextureAtlas {
                                             layout: sprite_sheet.1.clone(),
@@ -305,7 +305,7 @@ impl LayerType {
                                         0.,
                                         0.,
                                     )),
-                                    ..Default::default()
+                                    ..default()
                                 },
                                 Collider::rectangle((7 - pos) as f32 * 32., 32.),
                                 RigidBody::Static,
@@ -322,9 +322,9 @@ impl LayerType {
                                             )),
                                             sprite: Sprite {
                                                 custom_size: Some(Vec2::splat(32.)),
-                                                ..Default::default()
+                                                ..default()
                                             },
-                                            ..Default::default()
+                                            ..default()
                                         },
                                         TextureAtlas {
                                             layout: sprite_sheet.1.clone(),
@@ -350,9 +350,9 @@ impl LayerType {
                             )),
                             sprite: Sprite {
                                 custom_size: Some(Vec2::splat(32.)),
-                                ..Default::default()
+                                ..default()
                             },
-                            ..Default::default()
+                            ..default()
                         },
                         TextureAtlas {
                             layout: sprite_sheet.1.clone(),
@@ -379,9 +379,9 @@ impl LayerType {
                             )),
                             sprite: Sprite {
                                 custom_size: Some(Vec2::splat(32.)),
-                                ..Default::default()
+                                ..default()
                             },
-                            ..Default::default()
+                            ..default()
                         },
                         TextureAtlas {
                             layout: sprite_sheet.1.clone(),
