@@ -14,7 +14,7 @@ pub fn plugin(app: &mut App) {
 fn spawn_camera(mut commands: Commands) {
     commands
         .spawn((Camera2dBundle::default(), MainCamera, RigidBody::Dynamic))
-        .with_children(|p| { // TODO: does this need to be here? Move this to world or map?
+        .with_children(|p| {
             p.spawn((
                 SpatialBundle {
                     transform: Transform::from_translation(Vec3::X * 240.),
